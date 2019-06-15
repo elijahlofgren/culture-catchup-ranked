@@ -31,10 +31,26 @@
 </template>
 
 <script>
+import MovieService from '../services/MovieService.js';
+
 export default {
   name: 'HelloWorld',
   props: {
     msg: String
+  },
+  created() {
+    let vm = this;
+    vm.getMovies();
+  },
+  methods: {
+    getMovies() {
+      MovieService.getMovies().then(movies => {
+        console.log('movies = ');
+        console.log(JSON.stringify(movies));
+      }).catch(error => {
+        console.error(error);
+      });
+    }
   }
 }
 </script>
