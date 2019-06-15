@@ -1,6 +1,6 @@
 using System;
 
-namespace server.Models
+namespace CultureCatchupRanked.Models
 {
     public class ErrorViewModel
     {

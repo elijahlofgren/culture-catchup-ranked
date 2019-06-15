@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace server.Data.Migrations
+namespace CultureCatchupRanked.Data.Migrations
 {
     public partial class CreateIdentitySchema : Migration
     {

@@ -4,9 +4,9 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using server.Models;
+using CultureCatchupRanked.Models;
 
-namespace server.Controllers
+namespace CultureCatchupRanked.Controllers
 {
     public class HomeController : Controller
     {
