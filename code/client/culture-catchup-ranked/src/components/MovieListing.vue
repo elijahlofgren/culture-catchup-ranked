@@ -4,8 +4,6 @@
     <div v-if="movies">
       <v-card>
         <v-card-title>
-          Movies
-          <v-spacer></v-spacer>
           <v-text-field
             v-model="search"
             append-icon="search"
@@ -22,10 +20,13 @@
           :search="search"
         >
           <template v-slot:items="props">
-            <td>{{ props.item.title }}</td>
-            <td class="text-xs-right">
+            <td class="text-xs-left">
               <v-btn>Upvote</v-btn>
               <v-btn>Downvote</v-btn>
+            </td>
+            <td class="text-xs-left">{{ props.item.title }}</td>
+            <td class="text-xs-left">
+              <v-btn @click="searchImdb(props.item)">IMDB</v-btn>
             </td>
           </template>
           <template v-slot:no-results>
@@ -54,10 +55,18 @@ export default {
       search: "",
       headers: [
         {
+          text: "Actions",
+          width: 290,
+          sortable: false
+        },
+        {
           text: "Movie Name",
-          align: "left",
           sortable: true,
           value: "title"
+        },
+        {
+          text: "IMDB",
+          sortable: false
         }
       ],
       movies: null,
@@ -72,6 +81,13 @@ export default {
     vm.getMovies();
   },
   methods: {
+    searchImdb(movieItem) {
+      window.open(
+        "https://www.imdb.com/find?ref_=nv_sr_fn&q=" +
+          encodeURI(movieItem.title) +
+          "&s=tt"
+      );
+    },
     getMovies() {
       let vm = this;
       MovieService.getMovies()
