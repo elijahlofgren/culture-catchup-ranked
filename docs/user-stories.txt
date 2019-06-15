@@ -1,0 +1,9 @@
+Favorite button adds movie to "My List"
+
+You can reorder your list.
+
+Votes
+
+Comments
+
+See Ranked Page with aggregate votes
