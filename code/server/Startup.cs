@@ -28,6 +28,8 @@ namespace CultureCatchupRanked
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddCors(); // Make sure you call this previous to AddMvc
+
             services.Configure<CookiePolicyOptions>(options =>
             {
                 // This lambda determines whether user consent for non-essential cookies is needed for a given request.
@@ -43,6 +45,8 @@ namespace CultureCatchupRanked
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+
+            services.AddScoped<IApplicationDbContext, ApplicationDbContext>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -52,6 +56,11 @@ namespace CultureCatchupRanked
             {
                 app.UseDeveloperExceptionPage();
                 app.UseDatabaseErrorPage();
+           
+                   // Make sure you call this before calling app.UseMvc()
+                  app.UseCors(
+                      options => options.WithOrigins("http://localhost:8080/").AllowAnyMethod()
+                  );
             }
             else
             {
@@ -71,6 +80,8 @@ namespace CultureCatchupRanked
                 routes.MapRoute(
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
+
+                routes.MapRoute(name: "api", template: "api/{controller}");
             });
         }
     }
