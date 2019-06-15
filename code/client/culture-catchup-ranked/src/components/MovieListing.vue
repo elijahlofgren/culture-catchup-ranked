@@ -2,12 +2,41 @@
   <div class="hello">
     <h1>Culture Catchup Movie List</h1>
     <div v-if="movies">
-    <v-data-table :headers="headers" :items="movies" class="elevation-1">
-      <template v-slot:items="props">
-        <td>{{ props.item.title }}</td>
-        <td class="text-xs-right"><v-btn>Upvote</v-btn> <v-btn>Downvote</v-btn></td>
-      </template>
-    </v-data-table>
+      <v-card>
+        <v-card-title>
+          Movies
+          <v-spacer></v-spacer>
+          <v-text-field
+            v-model="search"
+            append-icon="search"
+            label="Search"
+            single-line
+            hide-details
+          ></v-text-field>
+        </v-card-title>
+        <v-data-table
+          :pagination.sync="pagination"
+          :rows-per-page-items="rowsPerPageItems"
+          :headers="headers"
+          :items="movies"
+          :search="search"
+        >
+          <template v-slot:items="props">
+            <td>{{ props.item.title }}</td>
+            <td class="text-xs-right">
+              <v-btn>Upvote</v-btn>
+              <v-btn>Downvote</v-btn>
+            </td>
+          </template>
+          <template v-slot:no-results>
+            <v-alert
+              :value="true"
+              color="error"
+              icon="warning"
+            >Your search for "{{ search }}" found no results.</v-alert>
+          </template>
+        </v-data-table>
+      </v-card>
     </div>
   </div>
 </template>
@@ -22,15 +51,20 @@ export default {
   },
   data: function() {
     return {
+      search: "",
       headers: [
         {
           text: "Movie Name",
           align: "left",
           sortable: true,
           value: "title"
-        },
+        }
       ],
-      movies: null
+      movies: null,
+      rowsPerPageItems: [10, 20, 30, 40, 2000],
+      pagination: {
+        rowsPerPage: 2000
+      }
     };
   },
   created() {
