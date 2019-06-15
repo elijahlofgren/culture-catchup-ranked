@@ -26,7 +26,7 @@ export default {
         {
           text: "Movie Name",
           align: "left",
-          sortable: false,
+          sortable: true,
           value: "title"
         },
       ],
