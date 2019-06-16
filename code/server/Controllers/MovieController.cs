@@ -15,8 +15,10 @@ using CultureCatchupRanked.Data.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using CultureCatchupRanked.Data;
+using Microsoft.Extensions.Logging;
 
-//[Authorize]
+// TODO: Re-enable
+[Authorize]
 [Route("api/[controller]")]
 [ApiController]
 public class MovieController : ControllerBase
@@ -25,10 +27,15 @@ public class MovieController : ControllerBase
 
   private readonly ApplicationDbContext _context;
   private readonly UserManager<IdentityUser> _userManager;
+
+  private readonly ILogger _logger;
+
   public MovieController(
+    ILogger<MovieController> logger,
     UserManager<IdentityUser> userManager,
     ApplicationDbContext context)
   {
+    _logger = logger;
     _userManager = userManager;
     _context = context;
   }
@@ -44,6 +51,7 @@ public class MovieController : ControllerBase
   public async Task<ActionResult> UpVote(int movieId)
   {
     var user = await _userManager.GetUserAsync(HttpContext.User);
+    _logger.LogDebug("user id: " + user.Id);
     Movie movie = _context.Movies.Where(x => x.Id.Equals(movieId)).FirstOrDefault();
     Vote vote = new Vote
     {
@@ -61,6 +69,7 @@ public class MovieController : ControllerBase
   public async Task<ActionResult> DownVote(int movieId)
   {
     var user = await _userManager.GetUserAsync(HttpContext.User);
+    
     Movie movie = _context.Movies.Where(x => x.Id.Equals(movieId)).FirstOrDefault();
     Vote vote = new Vote
     {
