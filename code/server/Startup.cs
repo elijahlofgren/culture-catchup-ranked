@@ -46,7 +46,6 @@ namespace CultureCatchupRanked
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
-            services.AddScoped<IApplicationDbContext, ApplicationDbContext>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -59,7 +58,9 @@ namespace CultureCatchupRanked
            
                    // Make sure you call this before calling app.UseMvc()
                   app.UseCors(
-                      options => options.WithOrigins("http://localhost:8080").AllowAnyMethod()
+                      options => options.WithOrigins("http://localhost:8080")
+                      .AllowAnyMethod()
+                      .AllowAnyHeader()
                   );
             }
             else

@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Jun 15, 2019 at 01:23 AM
+-- Generation Time: Jun 16, 2019 at 05:52 PM
 -- Server version: 5.7.26-0ubuntu0.16.04.1
 -- PHP Version: 7.0.33-0ubuntu0.16.04.5
 
@@ -139,8 +139,9 @@ CREATE TABLE `Movies` (
 
 CREATE TABLE `Votes` (
   `Id` bigint(20) NOT NULL,
-  `UpVote` bit(1) NOT NULL,
-  `DownVote` bit(1) NOT NULL,
+  `MovieId` bigint(20) NOT NULL,
+  `UpVote` tinyint(1) NOT NULL,
+  `DownVote` tinyint(1) NOT NULL,
   `UserId` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
@@ -219,7 +220,8 @@ ALTER TABLE `Movies`
 --
 ALTER TABLE `Votes`
   ADD PRIMARY KEY (`Id`),
-  ADD KEY `Votes_UserId_Index` (`UserId`);
+  ADD KEY `FK_Votes_AspNetUsers_UserId` (`UserId`),
+  ADD KEY `FK_Votes_Movies_MovieId` (`MovieId`);
 
 --
 -- Indexes for table `__EFMigrationsHistory`
@@ -227,6 +229,15 @@ ALTER TABLE `Votes`
 ALTER TABLE `__EFMigrationsHistory`
   ADD PRIMARY KEY (`MigrationId`);
 
+--
+-- AUTO_INCREMENT for dumped tables
+--
+
+--
+-- AUTO_INCREMENT for table `Votes`
+--
+ALTER TABLE `Votes`
+  MODIFY `Id` bigint(20) NOT NULL AUTO_INCREMENT;
 --
 -- Constraints for dumped tables
 --
@@ -261,6 +272,13 @@ ALTER TABLE `AspNetUserRoles`
 --
 ALTER TABLE `AspNetUserTokens`
   ADD CONSTRAINT `FK_AspNetUserTokens_AspNetUsers_UserId` FOREIGN KEY (`UserId`) REFERENCES `AspNetUsers` (`Id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `Votes`
+--
+ALTER TABLE `Votes`
+  ADD CONSTRAINT `FK_Votes_AspNetUsers_UserId` FOREIGN KEY (`UserId`) REFERENCES `AspNetUsers` (`Id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `FK_Votes_Movies_MovieId` FOREIGN KEY (`MovieId`) REFERENCES `Movies` (`Id`) ON DELETE CASCADE;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;

@@ -1,3 +1,4 @@
+<script src="./MovieListing.js" />
 <template>
   <div class="hello">
     <h1>Culture Catchup Movie List</h1>
@@ -21,8 +22,8 @@
         >
           <template v-slot:items="props">
             <td class="text-xs-left">
-              <v-btn>Upvote</v-btn>
-              <v-btn>Downvote</v-btn>
+              <v-btn @click="upVote(props.item)">Upvote</v-btn>
+              <v-btn @click="downVote(props.item)">Downvote</v-btn>
             </td>
             <td class="text-xs-left">{{ props.item.title }}</td>
             <td class="text-xs-left">
@@ -41,69 +42,6 @@
     </div>
   </div>
 </template>
-
-<script>
-import MovieService from "../services/MovieService.js";
-
-export default {
-  name: "HelloWorld",
-  props: {
-    msg: String
-  },
-  data: function() {
-    return {
-      search: "",
-      headers: [
-        {
-          text: "Actions",
-          width: 290,
-          sortable: false
-        },
-        {
-          text: "Movie Name",
-          sortable: true,
-          value: "title"
-        },
-        {
-          text: "IMDB",
-          sortable: false
-        }
-      ],
-      movies: null,
-      rowsPerPageItems: [10, 20, 30, 40, 2000],
-      pagination: {
-        rowsPerPage: 2000
-      }
-    };
-  },
-  created() {
-    let vm = this;
-    vm.getMovies();
-  },
-  methods: {
-    searchImdb(movieItem) {
-      window.open(
-        "https://www.imdb.com/find?ref_=nv_sr_fn&q=" +
-          encodeURI(movieItem.title) +
-          "&s=tt"
-      );
-    },
-    getMovies() {
-      let vm = this;
-      MovieService.getMovies()
-        .then(response => {
-          let movies = response.data;
-          console.log("movies = ");
-          console.log(JSON.stringify(movies));
-          vm.movies = movies;
-        })
-        .catch(error => {
-          console.error(error);
-        });
-    }
-  }
-};
-</script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>

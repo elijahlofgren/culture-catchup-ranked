@@ -1,6 +1,6 @@
 using System;
 
-namespace CultureCatchupRanked.Data.Entities
+namespace CultureCatchupRanked.Data.Entities 
 {
   public class Movie
   {

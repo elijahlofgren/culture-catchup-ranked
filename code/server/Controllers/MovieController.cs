@@ -13,6 +13,8 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using CultureCatchupRanked.Data.Entities;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using CultureCatchupRanked.Data;
 
 //[Authorize]
 [Route("api/[controller]")]
@@ -21,10 +23,13 @@ public class MovieController : ControllerBase
 {
 
 
-  private IApplicationDbContext _context = null;
-
-  public MovieController(IApplicationDbContext context)
+  private readonly ApplicationDbContext _context;
+  private readonly UserManager<IdentityUser> _userManager;
+  public MovieController(
+    UserManager<IdentityUser> userManager,
+    ApplicationDbContext context)
   {
+    _userManager = userManager;
     _context = context;
   }
 
@@ -33,5 +38,39 @@ public class MovieController : ControllerBase
   {
     List<Movie> products = _context.Movies.ToList();
     return products;
+  }
+
+  [HttpPost("UpVote/{movieId}")]
+  public async Task<ActionResult> UpVote(int movieId)
+  {
+    var user = await _userManager.GetUserAsync(HttpContext.User);
+    Movie movie = _context.Movies.Where(x => x.Id.Equals(movieId)).FirstOrDefault();
+    Vote vote = new Vote
+    {
+      User = user,
+      Movie = movie,
+      UpVote = true,
+      DownVote = false
+    };
+    _context.Add(vote);
+    _context.SaveChanges();
+    return Ok("Upvoted");
+  }
+
+  [HttpPost("DownVote/{movieId}")]
+  public async Task<ActionResult> DownVote(int movieId)
+  {
+    var user = await _userManager.GetUserAsync(HttpContext.User);
+    Movie movie = _context.Movies.Where(x => x.Id.Equals(movieId)).FirstOrDefault();
+    Vote vote = new Vote
+    {
+      User = user,
+      Movie = movie,
+      UpVote = false,
+      DownVote = true
+    };
+    _context.Add(vote);
+    _context.SaveChanges();
+    return Ok("Downvoted");
   }
 }
