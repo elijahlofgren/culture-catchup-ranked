@@ -2,6 +2,7 @@
 <template>
   <div class="hello">
     <h1>Culture Catchup Movie List</h1>
+    <AddMovie></AddMovie>
     <div v-if="movies">
       <v-card>
         <v-card-title>

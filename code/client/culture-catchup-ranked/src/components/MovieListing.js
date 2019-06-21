@@ -1,7 +1,12 @@
 import MovieService from "../services/MovieService.js";
 
+import AddMovie from './AddMovie/AddMovie.vue';
+
 export default {
   name: "MovieListing",
+  components: {
+    AddMovie
+  },
   props: {
     msg: String
   },

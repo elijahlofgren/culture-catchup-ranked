@@ -17,7 +17,6 @@ using Microsoft.AspNetCore.Identity;
 using CultureCatchupRanked.Data;
 using Microsoft.Extensions.Logging;
 
-// TODO: Re-enable
 [Authorize]
 [Route("api/[controller]")]
 [ApiController]
@@ -69,7 +68,7 @@ public class MovieController : ControllerBase
   public async Task<ActionResult> DownVote(int movieId)
   {
     var user = await _userManager.GetUserAsync(HttpContext.User);
-    
+    _logger.LogDebug("user id: " + user.Id);
     Movie movie = _context.Movies.Where(x => x.Id.Equals(movieId)).FirstOrDefault();
     Vote vote = new Vote
     {
