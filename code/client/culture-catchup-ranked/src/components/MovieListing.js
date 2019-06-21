@@ -50,33 +50,41 @@ export default {
     },
     upVote(movieItem) {
       MovieService.upVote(movieItem.id)
-      .then(() => {
-        console.log("Up Voted");
-      })
-      .catch(error => {
-        console.error(error);
-      });
-    },
-    downVote(movieItem) {
-      MovieService.downVote(movieItem.id)
-      .then(() => {
-        console.log("Down Voted");
-      })
-      .catch(error => {
-        console.error(error);
-      });
-    },
-    getMovies() {
-      let vm = this;
-      MovieService.getMovies()
-        .then(response => {
-          let movies = response.data;
-          console.log("movies = ");
-          console.log(JSON.stringify(movies));
-          vm.movies = movies;
+        .then(() => {
+          console.log("Up Voted");
         })
         .catch(error => {
           console.error(error);
+        });
+    },
+    downVote(movieItem) {
+      MovieService.downVote(movieItem.id)
+        .then(() => {
+          console.log("Down Voted");
+        })
+        .catch(error => {
+          console.error(error);
+        });
+    },
+    getMovies() {
+      let vm = this;
+
+      MovieService.getMovies()
+        .then((response) => {
+          console.log("response = ");
+          console.log(JSON.stringify(response));
+          console.log(response);
+          response.json().then((data) => {
+            let movies = data;
+            vm.movies = movies;
+          });
+
+        })
+        .catch(error => {
+          console.error('Error =');
+          console.error(error);
+          window.location.href = '/Identity/Account/Login';
+
         });
     }
   }
