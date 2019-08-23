@@ -42,9 +42,31 @@ public class MovieController : ControllerBase
   [HttpGet]
   public ActionResult<List<Movie>> Get()
   {
-    List<Movie> products = _context.Movies.ToList();
-    return products;
+    List<Movie> movies = _context.Movies.ToList();
+    return movies;
   }
+
+    [HttpGet("GetListWithVotes")]
+  public ActionResult<List<MovieWithVoteCount>> GetListWithVotes()
+  {
+    List<Vote> votes = _context.Votes.ToList();
+    List<Movie> movies = _context.Movies.ToList();
+
+    List<MovieWithVoteCount> resultList = new List<MovieWithVoteCount>();
+
+    foreach(Movie movie in movies) {
+
+      MovieWithVoteCount movieWithVoteCount = new MovieWithVoteCount {
+        Movie = movie,
+        VoteCount = votes.Where(x => x.MovieId.Equals(movie.Id)).ToList().Count()
+      };
+
+      resultList.Add(movieWithVoteCount);
+    } 
+
+    return resultList.OrderByDescending(x => x.VoteCount).ToList();
+  }
+
 
   [HttpPost("UpVote/{movieId}")]
   public async Task<ActionResult> UpVote(int movieId)
