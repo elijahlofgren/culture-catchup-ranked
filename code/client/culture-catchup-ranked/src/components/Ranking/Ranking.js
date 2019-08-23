@@ -13,7 +13,20 @@ export default {
       search: "",
       headers: [
         {
-          text: "Votes",
+          text: "# Total Votes",
+          value: 'voteSum',
+          width: 290,
+          sortable: true
+        },
+        {
+          text: "# Up Votes",
+          value: 'upVoteCount',
+          width: 290,
+          sortable: true
+        },
+        {
+          text: "# Down Votes",
+          value: 'downVoteCount',
           width: 290,
           sortable: true
         },

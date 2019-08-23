@@ -7,6 +7,11 @@ namespace CultureCatchupRanked.Models
     {
         public Movie Movie { get; set; }
 
-        public int VoteCount {get; set;}
+        public int UpVoteCount {get; set;}
+
+        public int DownVoteCount {get; set;}
+        
+        public int VoteSum {get; set;}
+        
     }
 }

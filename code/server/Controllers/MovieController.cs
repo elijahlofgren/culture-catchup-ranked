@@ -56,15 +56,21 @@ public class MovieController : ControllerBase
 
     foreach(Movie movie in movies) {
 
+      var upVoteCount = votes.Where(x => x.MovieId.Equals(movie.Id) && x.UpVote.Equals(true)).ToList().Count();
+      var downVoteCount = votes.Where(x => x.MovieId.Equals(movie.Id) && x.DownVote.Equals(true)).ToList().Count();
+      var sum = upVoteCount - downVoteCount;
+
       MovieWithVoteCount movieWithVoteCount = new MovieWithVoteCount {
         Movie = movie,
-        VoteCount = votes.Where(x => x.MovieId.Equals(movie.Id)).ToList().Count()
+        DownVoteCount = downVoteCount,
+        UpVoteCount = upVoteCount,
+        VoteSum = sum
       };
 
       resultList.Add(movieWithVoteCount);
     } 
 
-    return resultList.OrderByDescending(x => x.VoteCount).ToList();
+    return resultList.OrderByDescending(x => x.VoteSum).ToList();
   }
 
 
@@ -74,15 +80,26 @@ public class MovieController : ControllerBase
     var user = await _userManager.GetUserAsync(HttpContext.User);
     _logger.LogDebug("user id: " + user.Id);
     Movie movie = _context.Movies.Where(x => x.Id.Equals(movieId)).FirstOrDefault();
-    Vote vote = new Vote
-    {
-      User = user,
-      Movie = movie,
-      UpVote = true,
-      DownVote = false
-    };
-    _context.Add(vote);
-    _context.SaveChanges();
+
+    // See if user has already submitted a vote for this movie, if so we need 
+    // to change their vote rather than adding another vote record
+    Vote existingVote = _context.Votes.Where(x => x.MovieId.Equals(movie.Id) && x.UserId.Equals(user.Id)).FirstOrDefault();
+
+    if (existingVote != null) {
+      existingVote.DownVote = false;
+      existingVote.UpVote = true;
+      _context.SaveChanges();
+    } else {
+      Vote vote = new Vote
+      {
+        User = user,
+        Movie = movie,
+        UpVote = true,
+        DownVote = false
+      };
+      _context.Add(vote);
+      _context.SaveChanges();
+    }
     return Ok("Upvoted");
   }
 
@@ -92,15 +109,27 @@ public class MovieController : ControllerBase
     var user = await _userManager.GetUserAsync(HttpContext.User);
     _logger.LogDebug("user id: " + user.Id);
     Movie movie = _context.Movies.Where(x => x.Id.Equals(movieId)).FirstOrDefault();
-    Vote vote = new Vote
-    {
-      User = user,
-      Movie = movie,
-      UpVote = false,
-      DownVote = true
-    };
-    _context.Add(vote);
-    _context.SaveChanges();
+
+
+    // See if user has already submitted a vote for this movie, if so we need 
+    // to change their vote rather than adding another vote record
+    Vote existingVote = _context.Votes.Where(x => x.MovieId.Equals(movie.Id) && x.UserId.Equals(user.Id)).FirstOrDefault();
+
+    if (existingVote != null) {
+      existingVote.DownVote = true;
+      existingVote.UpVote = false;
+      _context.SaveChanges();
+    } else {
+      Vote vote = new Vote
+      {
+        User = user,
+        Movie = movie,
+        UpVote = false,
+        DownVote = true
+      };
+      _context.Add(vote);
+      _context.SaveChanges();
+    }
     return Ok("Downvoted");
   }
 }
