@@ -22,13 +22,17 @@
           :search="search"
         >
           <template v-slot:items="props">
+            <td class="text-xs-left">{{props.item.voteSum}}</td>
+            <td class="text-xs-left">{{props.item.upVoteCount}}</td>
+            <td class="text-xs-left">{{props.item.downVoteCount}}</td>
+
             <td class="text-xs-left">
-              <v-btn @click="upVote(props.item)">Upvote</v-btn>
-              <v-btn @click="downVote(props.item)">Downvote</v-btn>
+              <v-btn @click="upVote(props.item.movie)">Upvote</v-btn>
+              <v-btn @click="downVote(props.item.movie)">Downvote</v-btn>
             </td>
-            <td class="text-xs-left">{{ props.item.title }}</td>
+            <td class="text-xs-left">{{ props.item.movie.title }}</td>
             <td class="text-xs-left">
-              <v-btn @click="searchImdb(props.item)">IMDB</v-btn>
+              <v-btn @click="searchImdb(props.item.movie)">IMDB</v-btn>
             </td>
           </template>
           <template v-slot:no-results>

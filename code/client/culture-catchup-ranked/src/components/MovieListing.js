@@ -15,6 +15,26 @@ export default {
       search: "",
       headers: [
         {
+          text: "Vote Score",
+          width: 50,
+          sortable: true,
+          value: "voteSum"
+        },
+        {
+          text: "Upvotes",
+          width: 50,
+          sortable: true,
+          value: "upVoteCount"
+
+        },
+        {
+          text: "Downvotes",
+          width: 50,
+          sortable: true,
+          value: "downVoteCount"
+
+        },
+        {
           text: "Actions",
           width: 290,
           sortable: false
@@ -22,7 +42,7 @@ export default {
         {
           text: "Movie Name",
           sortable: true,
-          value: "title"
+          value: "Movie.title"
         },
         {
           text: "IMDB",
@@ -69,9 +89,9 @@ export default {
     getMovies() {
       let vm = this;
 
-      MovieService.getMovies()
+      MovieService.getMoviesWithVotes()
         .then((response) => {
-          console.log("response = ");
+          console.log("getMoviesWithVotes response = ");
           console.log(JSON.stringify(response));
           console.log(response);
           response.json().then((data) => {
