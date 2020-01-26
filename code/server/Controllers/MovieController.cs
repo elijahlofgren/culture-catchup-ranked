@@ -46,7 +46,7 @@ public class MovieController : ControllerBase
     return movies;
   }
 
-    [HttpGet("GetListWithVotes")]
+  [HttpGet("GetListWithVotes")]
   public ActionResult<List<MovieWithVoteCount>> GetListWithVotes()
   {
     List<Vote> votes = _context.Votes.ToList();
@@ -54,13 +54,15 @@ public class MovieController : ControllerBase
 
     List<MovieWithVoteCount> resultList = new List<MovieWithVoteCount>();
 
-    foreach(Movie movie in movies) {
+    foreach (Movie movie in movies)
+    {
 
       var upVoteCount = votes.Where(x => x.MovieId.Equals(movie.Id) && x.UpVote.Equals(true)).ToList().Count();
       var downVoteCount = votes.Where(x => x.MovieId.Equals(movie.Id) && x.DownVote.Equals(true)).ToList().Count();
       var sum = upVoteCount - downVoteCount;
 
-      MovieWithVoteCount movieWithVoteCount = new MovieWithVoteCount {
+      MovieWithVoteCount movieWithVoteCount = new MovieWithVoteCount
+      {
         Movie = movie,
         DownVoteCount = downVoteCount,
         UpVoteCount = upVoteCount,
@@ -68,9 +70,27 @@ public class MovieController : ControllerBase
       };
 
       resultList.Add(movieWithVoteCount);
-    } 
+    }
 
     return resultList.OrderByDescending(x => x.VoteSum).ToList();
+  }
+
+  [HttpPost("Add")]
+  public async Task<ActionResult> Add([FromBody] Movie movie)
+  {
+
+    var user = await _userManager.GetUserAsync(HttpContext.User);
+    _logger.LogDebug("Movie Add: user id: " + user.Id);
+
+    // TODO: Log name of user adding movie/
+    Movie newEntity = new Movie
+    {
+      Title = movie.Title
+    };
+    _context.Add(newEntity);
+    _context.SaveChanges();
+    return Ok("Movie added");
+
   }
 
 
@@ -85,11 +105,14 @@ public class MovieController : ControllerBase
     // to change their vote rather than adding another vote record
     Vote existingVote = _context.Votes.Where(x => x.MovieId.Equals(movie.Id) && x.UserId.Equals(user.Id)).FirstOrDefault();
 
-    if (existingVote != null) {
+    if (existingVote != null)
+    {
       existingVote.DownVote = false;
       existingVote.UpVote = true;
       _context.SaveChanges();
-    } else {
+    }
+    else
+    {
       Vote vote = new Vote
       {
         User = user,
@@ -115,11 +138,14 @@ public class MovieController : ControllerBase
     // to change their vote rather than adding another vote record
     Vote existingVote = _context.Votes.Where(x => x.MovieId.Equals(movie.Id) && x.UserId.Equals(user.Id)).FirstOrDefault();
 
-    if (existingVote != null) {
+    if (existingVote != null)
+    {
       existingVote.DownVote = true;
       existingVote.UpVote = false;
       _context.SaveChanges();
-    } else {
+    }
+    else
+    {
       Vote vote = new Vote
       {
         User = user,
