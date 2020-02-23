@@ -15,6 +15,13 @@ export default {
       redirect: 'error'
     });
   },
+  getMyUpVotes() {
+    // Use fetch so we can easily redirect to login page if not logged in.
+    return fetch(process.env.VUE_APP_API_URL + 'Movie/GetMyUpVotes', {
+      credentials: "same-origin",
+      redirect: 'error'
+    });
+  },
   addMovie(model) {
     return axios.post(process.env.VUE_APP_API_URL + 'Movie/Add', model);
   },

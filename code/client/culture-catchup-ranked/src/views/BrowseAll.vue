@@ -1,18 +1,18 @@
 <template>
   <div class="home">
     <img src="../assets/images/film-4208954_640.jpg">
-    <Ranking />
+    <MovieListing />
   </div>
 </template>
 
 <script>
 // @ is an alias to /src
-import Ranking from '@/components/Ranking/Ranking.vue'
+import MovieListing from '@/components/MovieListing.vue'
 
 export default {
   name: 'home',
   components: {
-    Ranking
+    MovieListing
   }
 }
 </script>

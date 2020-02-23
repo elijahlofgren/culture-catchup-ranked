@@ -16,6 +16,10 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using CultureCatchupRanked.Data;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Configuration;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using Newtonsoft.Json;
 
 [Authorize]
 [Route("api/[controller]")]
@@ -26,17 +30,20 @@ public class MovieController : ControllerBase
 
   private readonly ApplicationDbContext _context;
   private readonly UserManager<IdentityUser> _userManager;
-
+  private readonly IConfiguration _configuration;
   private readonly ILogger _logger;
-
+  private static readonly HttpClient client = new HttpClient();
+  
   public MovieController(
     ILogger<MovieController> logger,
     UserManager<IdentityUser> userManager,
-    ApplicationDbContext context)
+    ApplicationDbContext context,
+    IConfiguration configuration)
   {
     _logger = logger;
     _userManager = userManager;
     _context = context;
+    _configuration = configuration;
   }
 
   [HttpGet]
@@ -63,6 +70,7 @@ public class MovieController : ControllerBase
 
       MovieWithVoteCount movieWithVoteCount = new MovieWithVoteCount
       {
+        MovieTitle = movie.Title,
         Movie = movie,
         DownVoteCount = downVoteCount,
         UpVoteCount = upVoteCount,
@@ -70,6 +78,52 @@ public class MovieController : ControllerBase
       };
 
       resultList.Add(movieWithVoteCount);
+    }
+
+    return resultList.OrderByDescending(x => x.VoteSum).ToList();
+  }
+
+  [HttpGet("GetMyUpVotes")]
+  public async Task<ActionResult<List<MovieWithVoteCount>>> GetMyUpVotes()
+  {
+    var user = await _userManager.GetUserAsync(HttpContext.User);
+
+    List<Vote> votes = _context.Votes.ToList();
+    List<Movie> movies = _context.Movies.ToList();
+
+    List<MovieWithVoteCount> resultList = new List<MovieWithVoteCount>();
+
+    foreach (Movie movie in movies)
+    {
+
+      var upVotes = votes.Where(x => x.MovieId.Equals(movie.Id) && x.UpVote.Equals(true)).ToList();
+      var upVoteCount = upVotes.Count();
+      var downVoteCount = votes.Where(x => x.MovieId.Equals(movie.Id) && x.DownVote.Equals(true)).ToList().Count();
+      var sum = upVoteCount - downVoteCount;
+
+      // Only include movie and fetch info about it if user has upvoted it
+      if (upVotes.Find(x => x.UserId.Equals(user.Id)) != null) {
+        // Fetch movie info using http://www.omdbapi.com (patreon subscription required to get api key
+        // which is required for poster images)
+        // Example http://www.omdbapi.com/?t=Speed&apikey=YOUR_API_KEY_HERE
+        client.DefaultRequestHeaders.Accept.Clear();
+        client.DefaultRequestHeaders.Accept.Add(
+            new MediaTypeWithQualityHeaderValue("application/json"));
+        client.DefaultRequestHeaders.Add("User-Agent", "CultureCatchup.fun");
+        var apiUrl = "http://www.omdbapi.com/?t=" + movie.Title + "&apikey=" + _configuration["ApiKeys:OMDBApiKey"];
+        string movieInfoString = await client.GetStringAsync(apiUrl);
+        OMDBInfo movieInfo = JsonConvert.DeserializeObject<OMDBInfo>(movieInfoString);
+        MovieWithVoteCount movieWithVoteCount = new MovieWithVoteCount
+        {
+          MovieTitle = movie.Title,
+          Movie = movie,
+          DownVoteCount = downVoteCount,
+          UpVoteCount = upVoteCount,
+          VoteSum = sum,
+          MovieInfo = movieInfo
+        };
+        resultList.Add(movieWithVoteCount);
+      }
     }
 
     return resultList.OrderByDescending(x => x.VoteSum).ToList();

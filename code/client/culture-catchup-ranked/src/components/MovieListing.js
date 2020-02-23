@@ -42,7 +42,7 @@ export default {
         {
           text: "Movie Name",
           sortable: true,
-          value: "Movie.title"
+          value: "movieTitle"
         },
         {
           text: "IMDB",
