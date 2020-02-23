@@ -33,7 +33,7 @@ public class MovieController : ControllerBase
   private readonly IConfiguration _configuration;
   private readonly ILogger _logger;
   private static readonly HttpClient client = new HttpClient();
-  
+
   public MovieController(
     ILogger<MovieController> logger,
     UserManager<IdentityUser> userManager,
@@ -83,6 +83,38 @@ public class MovieController : ControllerBase
     return resultList.OrderByDescending(x => x.VoteSum).ToList();
   }
 
+  [HttpGet("GetListWithVotesAndMovieInfo")]
+  public async Task<ActionResult<List<MovieWithVoteCount>>> GetListWithVotesAndMovieInfo()
+  {
+    List<Vote> votes = _context.Votes.ToList();
+    List<Movie> movies = _context.Movies.ToList();
+
+    List<MovieWithVoteCount> resultList = new List<MovieWithVoteCount>();
+
+    foreach (Movie movie in movies)
+    {
+
+      var upVoteCount = votes.Where(x => x.MovieId.Equals(movie.Id) && x.UpVote.Equals(true)).ToList().Count();
+      var downVoteCount = votes.Where(x => x.MovieId.Equals(movie.Id) && x.DownVote.Equals(true)).ToList().Count();
+      var sum = upVoteCount - downVoteCount;
+      OMDBInfo movieInfo = await GetMovieInfo(movie.Title);
+
+      MovieWithVoteCount movieWithVoteCount = new MovieWithVoteCount
+      {
+        MovieTitle = movie.Title,
+        Movie = movie,
+        DownVoteCount = downVoteCount,
+        UpVoteCount = upVoteCount,
+        VoteSum = sum,
+        MovieInfo = movieInfo
+      };
+
+      resultList.Add(movieWithVoteCount);
+    }
+
+    return resultList.OrderByDescending(x => x.VoteSum).ToList();
+  }
+
   [HttpGet("GetMyUpVotes")]
   public async Task<ActionResult<List<MovieWithVoteCount>>> GetMyUpVotes()
   {
@@ -102,17 +134,9 @@ public class MovieController : ControllerBase
       var sum = upVoteCount - downVoteCount;
 
       // Only include movie and fetch info about it if user has upvoted it
-      if (upVotes.Find(x => x.UserId.Equals(user.Id)) != null) {
-        // Fetch movie info using http://www.omdbapi.com (patreon subscription required to get api key
-        // which is required for poster images)
-        // Example http://www.omdbapi.com/?t=Speed&apikey=YOUR_API_KEY_HERE
-        client.DefaultRequestHeaders.Accept.Clear();
-        client.DefaultRequestHeaders.Accept.Add(
-            new MediaTypeWithQualityHeaderValue("application/json"));
-        client.DefaultRequestHeaders.Add("User-Agent", "CultureCatchup.fun");
-        var apiUrl = "http://www.omdbapi.com/?t=" + movie.Title + "&apikey=" + _configuration["ApiKeys:OMDBApiKey"];
-        string movieInfoString = await client.GetStringAsync(apiUrl);
-        OMDBInfo movieInfo = JsonConvert.DeserializeObject<OMDBInfo>(movieInfoString);
+      if (upVotes.Find(x => x.UserId.Equals(user.Id)) != null)
+      {
+        OMDBInfo movieInfo = await GetMovieInfo(movie.Title);
         MovieWithVoteCount movieWithVoteCount = new MovieWithVoteCount
         {
           MovieTitle = movie.Title,
@@ -127,6 +151,30 @@ public class MovieController : ControllerBase
     }
 
     return resultList.OrderByDescending(x => x.VoteSum).ToList();
+  }
+
+  private async Task<OMDBInfo> GetMovieInfo(string movieTitle)
+  {
+    OMDBInfo result = new OMDBInfo();
+    try
+    {
+      // Fetch movie info using http://www.omdbapi.com (patreon subscription required to get api key
+      // which is required for poster images)
+      // Example http://www.omdbapi.com/?t=Speed&apikey=YOUR_API_KEY_HERE
+      client.DefaultRequestHeaders.Accept.Clear();
+      client.DefaultRequestHeaders.Accept.Add(
+          new MediaTypeWithQualityHeaderValue("application/json"));
+      client.DefaultRequestHeaders.Add("User-Agent", "CultureCatchup.fun");
+      var apiUrl = "http://www.omdbapi.com/?t=" + movieTitle + "&apikey=" + _configuration["ApiKeys:OMDBApiKey"];
+      string movieInfoString = await client.GetStringAsync(apiUrl);
+      result = JsonConvert.DeserializeObject<OMDBInfo>(movieInfoString);
+    }
+    catch (Exception e)
+    {
+      _logger.LogError("Error using OMBD API", e);
+      _logger.LogError(e.ToString());
+    }
+    return result;
   }
 
   [HttpPost("Add")]

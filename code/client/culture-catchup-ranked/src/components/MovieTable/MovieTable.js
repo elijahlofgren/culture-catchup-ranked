@@ -1,6 +1,6 @@
-import MovieService from "../services/MovieService.js";
+import MovieService from "../../services/MovieService.js";
 
-import AddMovie from './AddMovie/AddMovie.vue';
+import AddMovie from '../AddMovie/AddMovie.vue';
 
 export default {
   name: "MovieListing",

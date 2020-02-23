@@ -1,4 +1,4 @@
-<script src="./MovieListing.js" />
+<script src="./MovieTable.js" />
 <template>
   <div class="hello">
     <h1>Culture Catchup Movie List</h1>

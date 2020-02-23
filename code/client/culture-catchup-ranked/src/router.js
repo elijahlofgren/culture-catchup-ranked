@@ -1,7 +1,8 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import Home from './views/Home.vue'
-import BrowseAll from './views/BrowseAll.vue';
+import TableView from './views/TableView.vue';
+import MyUpVotes from './views/MyUpVotes.vue';
 
 Vue.use(Router)
 
@@ -13,9 +14,14 @@ export default new Router({
       component: Home
     },
     {
-      path: '/all',
-      name: 'browseAll',
-      component: BrowseAll
+      path: '/my',
+      name: 'MyUpVotes',
+      component: MyUpVotes
+    },
+    {
+      path: '/table',
+      name: 'TableView',
+      component: TableView
     },
     {
       path: '/about',
