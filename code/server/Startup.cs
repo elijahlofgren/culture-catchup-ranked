@@ -41,10 +41,11 @@ namespace CultureCatchupRanked
                 options.UseMySql(
                     Configuration.GetConnectionString("DefaultConnection")));
             services.AddDefaultIdentity<IdentityUser>()
-                .AddDefaultUI(UIFramework.Bootstrap4)
+                //.AddDefaultUI(UIFramework.Bootstrap4)
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            services.AddMvc();
+            //.SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
             services.AddAuthentication().AddFacebook(facebookOptions =>
             {
