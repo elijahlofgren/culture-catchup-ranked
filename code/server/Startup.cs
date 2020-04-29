@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.UI;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -37,14 +36,16 @@ namespace CultureCatchupRanked
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
+
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseMySql(
                     Configuration.GetConnectionString("DefaultConnection")));
-            services.AddDefaultIdentity<IdentityUser>()
-                //.AddDefaultUI(UIFramework.Bootstrap4)
+            services
+            .AddDefaultIdentity<IdentityUser>()
+                .AddDefaultUI()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
-            services.AddMvc();
+            services.AddRazorPages();
             //.SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
             services.AddAuthentication().AddFacebook(facebookOptions =>
@@ -61,7 +62,7 @@ namespace CultureCatchupRanked
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                app.UseDatabaseErrorPage();
+                //app.UseDatabaseErrorPage();
            
                    // Make sure you call this before calling app.UseMvc()
                   app.UseCors(
@@ -82,14 +83,17 @@ namespace CultureCatchupRanked
             app.UseCookiePolicy();
 
             app.UseAuthentication();
-
-            app.UseMvc(routes =>
+            app.UseRouting();
+            app.UseEndpoints(endpoints =>
             {
+                        endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}");
+                        endpoints.MapControllerRoute("api", "api/{controller}");
+/*
                 routes.MapRoute(
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
 
-                routes.MapRoute(name: "api", template: "api/{controller}");
+                routes.MapRoute(name: "api", template: "api/{controller}");*/
             });
         }
     }
