@@ -82,8 +82,9 @@ namespace CultureCatchupRanked
             app.UseStaticFiles();
             app.UseCookiePolicy();
 
-            app.UseAuthentication();
             app.UseRouting();
+            app.UseAuthentication();
+            app.UseAuthorization();
             app.UseEndpoints(endpoints =>
             {
                         endpoints.MapRazorPages(); // Map login page
