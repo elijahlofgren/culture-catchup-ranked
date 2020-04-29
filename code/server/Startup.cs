@@ -12,6 +12,7 @@ using Microsoft.EntityFrameworkCore;
 using CultureCatchupRanked.Data;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 namespace CultureCatchupRanked
 {
@@ -57,19 +58,19 @@ namespace CultureCatchupRanked
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostEnvironment env)
         {
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
                 //app.UseDatabaseErrorPage();
-           
-                   // Make sure you call this before calling app.UseMvc()
-                  app.UseCors(
-                      options => options.WithOrigins("http://localhost:8080")
-                      .AllowAnyMethod()
-                      .AllowAnyHeader()
-                  );
+
+                // Make sure you call this before calling app.UseMvc()
+                app.UseCors(
+                    options => options.WithOrigins("http://localhost:8080")
+                    .AllowAnyMethod()
+                    .AllowAnyHeader()
+                );
             }
             else
             {
@@ -87,16 +88,8 @@ namespace CultureCatchupRanked
             app.UseAuthorization();
             app.UseEndpoints(endpoints =>
             {
-                        endpoints.MapRazorPages(); // Map login page
-                        endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}");
-
-                        // endpoints.MapControllerRoute("api", "api/{controller}");
-/*
-                routes.MapRoute(
-                    name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}");
-
-                routes.MapRoute(name: "api", template: "api/{controller}");*/
+                endpoints.MapRazorPages(); // Map login page
+                endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}");
             });
         }
     }
