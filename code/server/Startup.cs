@@ -86,8 +86,10 @@ namespace CultureCatchupRanked
             app.UseRouting();
             app.UseEndpoints(endpoints =>
             {
+                        endpoints.MapRazorPages(); // Map login page
                         endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}");
-                        endpoints.MapControllerRoute("api", "api/{controller}");
+
+                        // endpoints.MapControllerRoute("api", "api/{controller}");
 /*
                 routes.MapRoute(
                     name: "default",
