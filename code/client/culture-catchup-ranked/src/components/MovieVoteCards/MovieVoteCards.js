@@ -16,6 +16,13 @@ export default {
     vm.getMovies();
   },
   methods: {
+    hasVoted(item) {
+      if (item.justVoted) {
+        return true;
+      } else {
+        return false;
+      }
+    },
     getMovies() {
       let vm = this;
      
@@ -37,6 +44,28 @@ export default {
           window.location.href = '/Identity/Account/Login';
 
         });
-    }
+    },
+    upVote(item) {
+      Vue.set(item, 'justVoted', true);
+      let movieItem = item.movie;
+      MovieService.upVote(movieItem.id)
+        .then(() => {
+          console.log("Up Voted");
+        })
+        .catch(error => {
+          console.error(error);
+        });
+    },
+    downVote(item) {
+      Vue.set(item, 'justVoted', true);
+      let movieItem = item.movie;
+      MovieService.downVote(movieItem.id)
+        .then(() => {
+          console.log("Down Voted");
+        })
+        .catch(error => {
+          console.error(error);
+        });
+    },
   }
 };

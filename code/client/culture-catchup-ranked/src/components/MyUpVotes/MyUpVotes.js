@@ -35,6 +35,24 @@ export default {
           window.location.href = '/Identity/Account/Login';
 
         });
-    }
+    },
+    upVote(movieItem) {
+      MovieService.upVote(movieItem.id)
+        .then(() => {
+          console.log("Up Voted");
+        })
+        .catch(error => {
+          console.error(error);
+        });
+    },
+    downVote(movieItem) {
+      MovieService.downVote(movieItem.id)
+        .then(() => {
+          console.log("Down Voted");
+        })
+        .catch(error => {
+          console.error(error);
+        });
+    },
   }
 };

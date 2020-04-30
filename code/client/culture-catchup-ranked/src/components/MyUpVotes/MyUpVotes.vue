@@ -37,6 +37,8 @@
               <v-avatar v-if="item.movieInfo.poster" class="ma-3" size="125" tile>
                 <v-img :src="item.movieInfo.poster"></v-img>
               </v-avatar>
+              <v-btn icon @click="upVote(item.movie)"><v-icon>fa-thumbs-up<v-icon> Upvote</v-btn>
+              <v-btn icon @click="downVote(item.movie)"><v-icon>fa-thumbs-down<v-icon>Downvote</v-btn>
             </div>
           </v-card>
         </v-col>
