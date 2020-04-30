@@ -21,6 +21,8 @@ export default {
     hasVoted(item) {
       if (item.justVoted) {
         return true;
+      } else if (item.currentUserUpVoted || item.currentUserDownVoted) {
+        return true;
       } else {
         return false;
       }
@@ -49,10 +51,13 @@ export default {
     },
     upVote(item) {
       Vue.set(item, 'justVoted', true);
+      Vue.set(item, 'voteForSubmitting', true);
       let movieItem = item.movie;
       MovieService.upVote(movieItem.id)
         .then(() => {
+          Vue.set(item, 'voteForSubmitting', false);
           console.log("Up Voted");
+          Vue.set(item, 'currentUserUpVoted', true);
         })
         .catch(error => {
           console.error(error);
@@ -60,10 +65,13 @@ export default {
     },
     downVote(item) {
       Vue.set(item, 'justVoted', true);
+      Vue.set(item, 'voteAgainstSubmitting', false);
       let movieItem = item.movie;
       MovieService.downVote(movieItem.id)
         .then(() => {
           console.log("Down Voted");
+          Vue.set(item, 'voteAgainstSubmitting', false);
+          Vue.set(item, 'currentUserDownVoted', true);
         })
         .catch(error => {
           console.error(error);

@@ -17,6 +17,9 @@ namespace CultureCatchupRanked.Models
         public int VoteSum {get; set;}
 
         public OMDBInfo MovieInfo { get;set;}
-        
+
+        public bool CurrentUserUpVoted {get;set;}
+
+        public bool CurrentUserDownVoted {get;set;}
     }
 }
