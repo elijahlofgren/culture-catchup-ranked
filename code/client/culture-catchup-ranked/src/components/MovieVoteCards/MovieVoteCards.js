@@ -1,5 +1,7 @@
 import './MovieVoteCards.scss';
+import Vue from 'vue';
 import MovieService from "../../services/MovieService.js";
+
 
 export default {
   props: {
