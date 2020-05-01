@@ -1,8 +1,17 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Home";
 }
 
 <div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+    <h1 class="display-4">Welcome to Culture Catchup!</h1>
+    @if(User.Identity.IsAuthenticated) 
+{
+   <p>You are logged in</p>
+   <script type="text/javascript">
+   window.location = '/dist/index.html';
+   </script>
+} else {
+    <p>Please register or login (see menu on top right) to see and vote on movies.</p>
+}
+    
 </div>

@@ -1,2 +1,4 @@
-rm -rfv ~/Documents/Projects/culture-catchup-ranked/code/server/wwwroot/dist && mkdir ~/Documents/Projects/culture-catchup-ranked/code/server/wwwroot/dist && ./node_modules/.bin/vue-cli-service build  --mode production  --dest  ~/Documents/Projects/culture-catchup-ranked/code/server/wwwroot/dist  
+rm -rfv ~/projects/culture-catchup-ranked/code/server/wwwroot/dist 
+mkdir ~/projects/culture-catchup-ranked/code/server/wwwroot/dist 
+./node_modules/.bin/vue-cli-service build  --mode production  --dest  ~/projects/culture-catchup-ranked/code/server/wwwroot/dist  
 

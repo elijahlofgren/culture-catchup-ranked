@@ -49,11 +49,12 @@ namespace CultureCatchupRanked
             services.AddRazorPages();
             //.SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
-            services.AddAuthentication().AddFacebook(facebookOptions =>
+            services.AddAuthentication();
+            /*.AddFacebook(facebookOptions =>
             {
                 facebookOptions.AppId = Configuration["Authentication:Facebook:AppId"];
                 facebookOptions.AppSecret = Configuration["Authentication:Facebook:AppSecret"];
-            });
+            });*/
 
         }
 
