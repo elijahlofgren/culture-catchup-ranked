@@ -1,9 +1,12 @@
 import './MovieVoteCards.scss';
 import Vue from 'vue';
 import MovieService from "../../services/MovieService.js";
-
+import AddMovie from '../AddMovie/AddMovie.vue';
 
 export default {
+  components: {
+    AddMovie
+  },
   props: {
     msg: String
   },
@@ -58,6 +61,7 @@ export default {
           Vue.set(item, 'voteForSubmitting', false);
           console.log("Up Voted");
           Vue.set(item, 'currentUserUpVoted', true);
+          item.upVoteCount++;
         })
         .catch(error => {
           console.error(error);
@@ -70,6 +74,7 @@ export default {
       MovieService.downVote(movieItem.id)
         .then(() => {
           console.log("Down Voted");
+          item.downVoteCount++;
           Vue.set(item, 'voteAgainstSubmitting', false);
           Vue.set(item, 'currentUserDownVoted', true);
         })

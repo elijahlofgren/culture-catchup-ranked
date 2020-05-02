@@ -53,6 +53,18 @@ public class MovieController : ControllerBase
         return movies;
     }
 
+    [HttpGet("SearchForMovie")]
+    public async Task<ActionResult<List<OMDBInfo>>> SearchForMovie(string title)
+    {
+        return await SearchApiForMovie(title);
+    }
+
+    /*[HttpGet("SearchForMovie")]
+    public async Task<ActionResult<string>> SearchForMovie(string title)
+    {
+        return await SearchApiForMovie(title);
+    }*/
+
     [HttpGet("GetListWithVotes")]
     public ActionResult<List<MovieWithVoteCount>> GetListWithVotes()
     {
@@ -98,7 +110,7 @@ public class MovieController : ControllerBase
             bool currentUserUpVoted = false;
             bool currentUserDownVoted = false;
 
-            var myVoteForThisMovie = votes.Where(x => x.MovieId.Equals(movie.Id) &&  x.UserId.Equals(user.Id)).ToList().FirstOrDefault();
+            var myVoteForThisMovie = votes.Where(x => x.MovieId.Equals(movie.Id) && x.UserId.Equals(user.Id)).ToList().FirstOrDefault();
             if (myVoteForThisMovie != null)
             {
                 if (myVoteForThisMovie.UpVote)
@@ -175,6 +187,34 @@ public class MovieController : ControllerBase
       return resultList.OrderByDescending(x => x.VoteSum).ToList();
     }
   */
+    private async Task<List<OMDBInfo>> SearchApiForMovie(string movieTitle)
+    //private async Task<string> SearchApiForMovie(string movieTitle)
+    {
+        string tempTestResult = string.Empty;
+        OMDBSearchResult result = new OMDBSearchResult();
+        try
+        {
+            // Fetch movie info using http://www.omdbapi.com (patreon subscription required to get api key
+            // which is required for poster images)
+            // Example http://www.omdbapi.com/?t=Speed&apikey=YOUR_API_KEY_HERE
+            client.DefaultRequestHeaders.Accept.Clear();
+            client.DefaultRequestHeaders.Accept.Add(
+                new MediaTypeWithQualityHeaderValue("application/json"));
+            client.DefaultRequestHeaders.Add("User-Agent", "CultureCatchup.fun");
+            var apiUrl = "http://www.omdbapi.com/?type=movie&s=" + movieTitle + "&apikey=" + _configuration["ApiKeys:OMDBApiKey"];
+            string movieInfoString = await client.GetStringAsync(apiUrl);
+            //return movieInfoString;
+            result = JsonConvert.DeserializeObject<OMDBSearchResult>(movieInfoString);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError("Error using OMBD API", e);
+            _logger.LogError(e.ToString());
+        }
+        return result.Search;
+        //return tempTestResult;
+    }
+
     private async Task<OMDBInfo> GetMovieInfo(string movieTitle)
     {
         OMDBInfo result = new OMDBInfo();
@@ -206,9 +246,14 @@ public class MovieController : ControllerBase
         var user = await _userManager.GetUserAsync(HttpContext.User);
         _logger.LogDebug("Movie Add: user id: " + user.Id);
 
+        if(string.IsNullOrEmpty(movie.imdbID)) {
+            throw new Exception("imdbID is required");
+        }
+
         // TODO: Log name of user adding movie/
         Movie newEntity = new Movie
         {
+            imdbID = movie.imdbID,
             Title = movie.Title
         };
         _context.Add(newEntity);

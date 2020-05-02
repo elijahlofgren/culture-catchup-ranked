@@ -1,6 +1,13 @@
 import axios from 'axios';
 
 export default {
+  searchForMovie(title) {
+    // Use fetch so we can easily redirect to login page if not logged in.
+    return fetch(process.env.VUE_APP_API_URL + 'Movie/SearchForMovie?title=' + title, {
+      credentials: "same-origin",
+      redirect: 'error'
+    });
+  },
   getMovies() {
     // Use fetch so we can easily redirect to login page if not logged in.
     return fetch(process.env.VUE_APP_API_URL + 'Movie', {

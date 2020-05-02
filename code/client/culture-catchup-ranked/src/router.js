@@ -2,7 +2,7 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import Home from './views/Home.vue'
 import TableView from './views/TableView.vue';
-import MyUpVotes from './views/MyUpVotes.vue';
+//import MyUpVotes from './views/MyUpVotes.vue';
 
 Vue.use(Router)
 
@@ -13,11 +13,11 @@ export default new Router({
       name: 'home',
       component: Home
     },
-    {
+    /*{
       path: '/my',
       name: 'MyUpVotes',
       component: MyUpVotes
-    },
+    },*/
     {
       path: '/table',
       name: 'TableView',

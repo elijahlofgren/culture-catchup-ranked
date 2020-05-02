@@ -26,6 +26,19 @@
     <v-container>
       <div v-if="loading">Loading...</div>
       <v-row v-else>
+        <v-col cols="12">
+          <v-card dark>
+            <div class="movie-card d-flex flex-no-wrap justify-space-between">
+              <!-- grids for Vuetify 1.5 https://v15.vuetifyjs.com/en/framework/grid -->
+              <v-layout row wrap>
+                <v-flex xs6 sm6 md6>
+                  <v-card-title class="headline">Add New Movie</v-card-title>
+                </v-flex>
+              </v-layout>
+              <AddMovie></AddMovie>
+            </div>
+          </v-card>
+        </v-col>
         <v-col v-for="(item, i) in movies" :key="i" cols="12">
           <v-card dark>
             <div class="movie-card d-flex flex-no-wrap justify-space-between">
@@ -34,13 +47,16 @@
                 <v-flex xs6 sm6 md6>
                   <v-card-title class="headline" v-text="item.movie.title"></v-card-title>
                   <p
-                    v-if="item.movieInfo.Director"
-                  >{{item.movieInfo.Director}} ({{item.movieInfo.Year}})</p>
-                  <div v-if="item.movieInfo.plot" class="plot" v-text="item.movieInfo.plot"></div>
+                    v-if="item.movieInfo.director"
+                  >{{item.movieInfo.director}} ({{item.movieInfo.year}})</p>
+                  <p v-if="item.movieInfo.actors">{{item.movieInfo.actors}}</p>
                 </v-flex>
                 <v-flex xs6 sm6 md6>
                   <div v-if="item.upVoteCount > 0" class="upvotes">Upvotes: {{item.upVoteCount}}</div>
-                  <div v-if="item.downVoteCount > 0" class="downvotes">Downvotes: {{item.downVoteCount}}</div>
+                  <div
+                    v-if="item.downVoteCount > 0"
+                    class="downvotes"
+                  >Downvotes: {{item.downVoteCount}}</div>
                   <span v-if="item.voteForSubmitting">
                     <v-icon>fa-spinner</v-icon>Saving vote...
                   </span>
@@ -59,7 +75,11 @@
                   <span v-if="item.currentUserDownVoted">
                     <v-icon>fa-stop-circle</v-icon>You downvoted this
                   </span>
-                  <a target="_blank" :href="'https://www.imdb.com/title/' + item.movieInfo.imdbID">
+                  <a
+                    target="_blank"
+                    title="View IMDB"
+                    :href="'https://www.imdb.com/title/' + item.movieInfo.imdbID"
+                  >
                     <v-avatar
                       v-if="item.movieInfo.poster && item.movieInfo.poster.length > 0"
                       class="ma-3"
@@ -69,6 +89,9 @@
                       <v-img :src="item.movieInfo.poster"></v-img>
                     </v-avatar>
                   </a>
+                </v-flex>
+                <v-flex xs12 sm12 md12>
+                  <div v-if="item.movieInfo.plot" class="plot" v-text="item.movieInfo.plot"></div>
                 </v-flex>
               </v-layout>
             </div>
