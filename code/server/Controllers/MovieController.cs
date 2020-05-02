@@ -125,7 +125,13 @@ public class MovieController : ControllerBase
             var upVoteCount = votes.Where(x => x.MovieId.Equals(movie.Id) && x.UpVote.Equals(true)).ToList().Count();
             var downVoteCount = votes.Where(x => x.MovieId.Equals(movie.Id) && x.DownVote.Equals(true)).ToList().Count();
             var sum = upVoteCount - downVoteCount;
-            OMDBInfo movieInfo = await GetMovieInfo(movie.Title);
+            OMDBInfo movieInfo = null;
+            // If we have stored ID, use that.
+            if(!string.IsNullOrEmpty(movie.imdbID)) {
+                movieInfo = await GetMovieInfoById(movie.imdbID);
+            } else {
+                movieInfo = await GetMovieInfo(movie.Title);
+            }
 
             MovieWithVoteCount movieWithVoteCount = new MovieWithVoteCount
             {
@@ -213,6 +219,30 @@ public class MovieController : ControllerBase
         }
         return result.Search;
         //return tempTestResult;
+    }
+
+private async Task<OMDBInfo> GetMovieInfoById(string imdbID)
+    {
+        OMDBInfo result = new OMDBInfo();
+        try
+        {
+            // Fetch movie info using http://www.omdbapi.com (patreon subscription required to get api key
+            // which is required for poster images)
+            // Example http://www.omdbapi.com/?t=Speed&apikey=YOUR_API_KEY_HERE
+            client.DefaultRequestHeaders.Accept.Clear();
+            client.DefaultRequestHeaders.Accept.Add(
+                new MediaTypeWithQualityHeaderValue("application/json"));
+            client.DefaultRequestHeaders.Add("User-Agent", "CultureCatchup.fun");
+            var apiUrl = "http://www.omdbapi.com/?i=" + imdbID + "&apikey=" + _configuration["ApiKeys:OMDBApiKey"];
+            string movieInfoString = await client.GetStringAsync(apiUrl);
+            result = JsonConvert.DeserializeObject<OMDBInfo>(movieInfoString);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError("Error using OMBD API", e);
+            _logger.LogError(e.ToString());
+        }
+        return result;
     }
 
     private async Task<OMDBInfo> GetMovieInfo(string movieTitle)
